@@ -1,0 +1,91 @@
+Uber:
+LOAD
+    id,
+    "timestamp",
+    "hour",
+    "day",
+    "month",
+    datetime,
+    "timezone",
+    source,
+    destination,
+    cab_type,
+    product_id,
+    name,
+    price,
+    distance,
+    surge_multiplier,
+    latitude,
+    longitude,
+    temperature,
+    apparentTemperature,
+    short_summary,
+    long_summary,
+    precipIntensity,
+    precipProbability,
+    humidity,
+    windSpeed,
+    windGust,
+    windGustTime,
+    visibility,
+    temperatureHigh,
+    temperatureHighTime,
+    temperatureLow,
+    temperatureLowTime,
+    apparentTemperatureHigh,
+    apparentTemperatureHighTime,
+    apparentTemperatureLow,
+    apparentTemperatureLowTime,
+    icon,
+    dewPoint,
+    pressure,
+    windBearing,
+    cloudCover,
+    uvIndex,
+    visibility.1,
+    ozone,
+    sunriseTime,
+    sunsetTime,
+    moonPhase,
+    precipIntensityMax,
+    uvIndexTime,
+    temperatureMin,
+    temperatureMinTime,
+    temperatureMax,
+    temperatureMaxTime,
+    apparentTemperatureMin,
+    apparentTemperatureMinTime,
+    apparentTemperatureMax,
+    apparentTemperatureMaxTime
+FROM [lib://Assignment_02/Ass1.csv]
+(txt, codepage is 28591, embedded labels, delimiter is ',', msq)
+
+Where Len(Trim(price))>0;
+
+STORE Uber into [lib://Assignment_02/Ass2.qvd]  
+(qvd);
+Drop Table Uber;
+
+Uber:
+LOAD
+    id,
+    "hour",
+    "day",
+    "month",
+    datetime,
+    "timezone",
+    source,
+    destination,
+    cab_type,
+    product_id,
+    name,
+    price,
+    distance,
+    temperature,
+    humidity,
+    windSpeed,
+    pressure,
+    year(date(datetime)) as year,
+    date(Date(datetime)) as date
+FROM [lib://Assignment_02/Ass2.qvd]
+(qvd);
