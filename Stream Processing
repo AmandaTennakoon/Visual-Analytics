@@ -1,0 +1,173 @@
+----The total number of rides over the last 1 minute for each product_id.------
+
+@App:name("Assignment_02_01")
+
+@App:description("Description of the plan")
+
+@source(type='file', file.uri='file:///C:/Users/BI/Desktop/Assignment2.csv', @map(type='csv', header.present='false'))
+define stream InputStream1(id string, hour float, day int, month int, datetime string, timezone string, source string, destination string, cab_type string, product_id string, name string, price double);
+
+@sink(type='log', prefix='LOGGER') 
+define stream OutputStream1(product_id string, totalrides long);
+
+@store(type="rdbms" , 
+        jdbc.url="jdbc:mysql://localhost:3306/assignment_02?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
+        username="root",
+        password="",
+        jdbc.driver.name="com.mysql.jdbc.Driver")
+        
+define table table1(product_id string, totalrides long);
+
+@info(name='TotalRides1')
+from InputStream1 #window.time(1 minutes)
+select product_id, count(id) as totalrides
+group by product_id
+insert into OutputStream1;
+
+@info(name='TotalRides2') 
+from OutputStream1
+select product_id, totalrides
+insert into table1;
+
+######################################################################################################################################
+
+-----Average taxi fare for the last 1 min for each product_id. Make sure that you have
+considered the rides in between the same source and destination.--------
+
+@App:name("Assignment_02_02")
+
+@App:description("Description of the plan")
+
+@source(type='file', file.uri='file:///C:/Users/BI/Desktop/Assignment2.csv', @map(type='csv', header.present='false'))
+define stream InputStream2 (id string, hour float, day int, month int, datetime string, timezone string, source string, destination string, cab_type string, product_id string, name string, price double);
+
+@sink(type='log', prefix='LOGGER') 
+define stream OutputStream2 (product_id string, source string, destination string, avgtaxifare double);
+
+@store(type="rdbms" , 
+        jdbc.url="jdbc:mysql://localhost:3306/assignment_02?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
+        username="root",
+        password="",
+        jdbc.driver.name="com.mysql.jdbc.Driver")
+        
+define table table2 (product_id string, source string, destination string, avgtaxifare double);
+
+@info(name='AvgTaxiPrice1')
+from InputStream2 #window.time(1 minutes)
+select product_id, source, destination, avg(price) as avgtaxifare
+group by product_id
+insert into OutputStream2;
+
+@info(name='AvgTaxiPrice2') 
+from OutputStream2
+select product_id, source, destination, avgtaxifare
+insert into table2;
+
+#################################################################################################################################
+
+------Find out the highest taxi fare for the last 1 min for each cab_type.-------------
+
+@App:name("Assignment_02_03")
+
+@App:description("Description of the plan")
+
+@source(type='file', file.uri='file:///C:/Users/BI/Desktop/Assignment2.csv', @map(type='csv', header.present='false'))
+define stream InputStream3 (id string, hour float, day int, month int, datetime string, timezone string, source string, destination string, cab_type string, product_id string, name string, price double);
+
+@sink(type='log', prefix='LOGGER') 
+define stream OutputStream3 (cab_type string, maxtaxifare double);
+
+@store(type="rdbms" , 
+        jdbc.url="jdbc:mysql://localhost:3306/assignment_02?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
+        username="root",
+        password="",
+        jdbc.driver.name="com.mysql.jdbc.Driver")
+        
+define table table3 (cab_type string, maxtaxifare double);
+
+@info(name='HighestTaxiPrice1')
+from InputStream3 #window.time(1 minutes)
+select cab_type, max(price) as maxtaxifare
+group by cab_type
+insert into OutputStream3;
+
+@info(name='HighestTaxiPrice2') 
+from OutputStream3
+select cab_type, maxtaxifare
+insert into table3;
+
+###################################################################################################################################
+
+------------List down the top 3 taxi fares of each minute for each cab_type.------------------
+
+@App:name("Assignment_02_04")
+
+@App:description("Description of the plan")
+
+@source(type='file', file.uri='file:///C:/Users/BI/Desktop/Assignment2.csv', @map(type='csv', header.present='false'))
+define stream InputStream4(id string, hour double, day int, month int, datetime string, timezone string, source string, destination string, cab_type string, product_id string, name string, price double);
+
+@sink(type='log', prefix='LOGGER') 
+define stream OutputStream4 (cab_type string, price double);
+
+@store(type="rdbms" , 
+        jdbc.url="jdbc:mysql://localhost:3306/assignment_02?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
+        username="root",
+        password="",
+        jdbc.driver.name="com.mysql.jdbc.Driver")
+        
+define table table4 (cab_type string, price double);
+
+@info(name='TopTaxiFares1')
+from InputStream4 #window.time(1 minutes)
+select cab_type, price
+group by cab_type
+order by price desc
+limit 3
+insert into OutputStream4;
+
+@info(name='TopTaxiFares2') 
+from OutputStream4
+select cab_type, price
+insert into table4;
+
+########################################################################################################################################
+
+--------------Find out the source location which has the least number of rides of each 1 minute.------------------------------
+
+@App:name("Assignment_02_05")
+
+@App:description("Description of the plan")
+
+@source(type='file', file.uri='file:///C:/Users/BI/Desktop/Assignment2.csv', @map(type='csv', header.present='false'))
+define stream InputStream5(id string, hour float, day int, month int, datetime string, timezone string, source string, destination string, cab_type string, product_id string, name string, price double);
+
+@sink(type='log', prefix='LOGGER') 
+define stream OutputStream5 (source string, totalride long);
+
+@store(type="rdbms" , 
+        jdbc.url="jdbc:mysql://localhost:3306/assignment_02?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
+        username="root",
+        password="",
+        jdbc.driver.name="com.mysql.jdbc.Driver")
+        
+define table table5 (source string, totalride long);
+
+@info(name='SourceLocation1')
+from InputStream5 #window.time(1 minutes)
+select source, count(id) as totalride
+group by source
+order by totalride asc
+limit 1
+insert into OutputStream5;
+
+@info(name='SourceLocation2') 
+from OutputStream5
+select source, totalride
+insert into table5;
+
+###################################################################################################################################
+
+
+
+
