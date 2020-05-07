@@ -1,0 +1,26 @@
+## import libraries
+import sys
+
+%reload_ext autoreload
+%autoreload 2
+%matplotlib inline
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+import warnings; warnings.simplefilter('ignore')
+
+df = pd.read_csv('C:/Users/BI/Desktop/SLIIT/4 YEAR/1 SEM/VAUED/Assignment 2/uber-and-lyft-dataset-boston-ma/Ass1.csv')
+df.head()
+
+df = df.dropna()
+df = df.reset_index(drop=True)
+
+df = df.drop(['timestamp','surge_multiplier','latitude','longitude','temperature','apparentTemperature','short_summary','long_summary','precipIntensity','precipProbability','humidity','windSpeed','windGust','windGustTime','visibility','temperatureHigh','temperatureHighTime','temperatureLow','temperatureLowTime','apparentTemperatureHigh','apparentTemperatureHighTime','apparentTemperatureLow','apparentTemperatureLowTime','icon','dewPoint','pressure','windBearing','cloudCover','uvIndex','visibility.1','ozone','sunriseTime','sunsetTime','moonPhase','precipIntensityMax','uvIndexTime','temperatureMin','temperatureMinTime','temperatureMax','temperatureMaxTime','apparentTemperatureMin','apparentTemperatureMinTime','apparentTemperatureMax','apparentTemperatureMaxTime'
+], axis=1)
+df.head()
+df = df.reset_index(drop=True)
+
+# write dataframe to csv
+df.to_csv('C:/Users/BI/Desktop/SLIIT/4 YEAR/1 SEM/VAUED/Assignment 2/uber-and-lyft-dataset-boston-ma/Assignment2.csv')
